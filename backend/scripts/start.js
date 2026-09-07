@@ -33,10 +33,14 @@ function runPrisma(args) {
   return result.status ?? 1;
 }
 
-const status = runPrisma(['migrate', 'deploy']);
-if (status !== 0) {
+if (runPrisma(['generate']) !== 0) {
+  console.error('prisma generate failed on startup');
+  process.exit(1);
+}
+
+if (runPrisma(['migrate', 'deploy']) !== 0) {
   console.error('Startup migration failed');
-  process.exit(status);
+  process.exit(1);
 }
 
 require('../index.js');
