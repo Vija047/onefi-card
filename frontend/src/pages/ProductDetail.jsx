@@ -86,12 +86,12 @@ export default function ProductDetail() {
     setSelectedStorage(storage)
   }
 
-  const selectedPrice = selectedVariant?.price ?? product.price
-  const selectedMrp = selectedVariant?.mrp ?? product.mrp
-  const selectedEmiPlans = (product.emiPlans || []).map((plan) => ({
+  const selectedPrice = selectedVariant?.price ?? product?.price ?? 0
+  const selectedMrp = selectedVariant?.mrp ?? product?.mrp ?? 0
+  const selectedEmiPlans = (product?.emiPlans || []).map((plan) => ({
     ...plan,
     monthlyPayment: Math.round(
-      plan.monthlyPayment * (selectedPrice / product.price),
+      plan.monthlyPayment * (selectedPrice / (product?.price || 1)),
     ),
   }))
 
