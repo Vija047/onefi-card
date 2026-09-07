@@ -15,6 +15,7 @@ function serializeProduct(product) {
     name: product.name,
     slug: product.slug,
     description: product.description,
+    images: product.images,
     mrp: toNumber(product.mrp),
     price: toNumber(product.price),
     createdAt: product.createdAt,
@@ -26,6 +27,8 @@ function serializeProduct(product) {
           color: variant.color,
           storage: variant.storage,
           imageUrl: variant.imageUrl,
+          mrp: toNumber(variant.mrp),
+          price: toNumber(variant.price),
         }))
       : undefined,
     emiPlans: product.emiPlans
@@ -49,6 +52,7 @@ function serializeListingProduct(product) {
     name: product.name,
     slug: product.slug,
     description: product.description,
+    images: product.images,
     mrp: toNumber(product.mrp),
     price: toNumber(product.price),
     imageUrl: firstVariant?.imageUrl || null,

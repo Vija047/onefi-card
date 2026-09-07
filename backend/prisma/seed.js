@@ -6,6 +6,15 @@ const products = [
   {
     name: 'iPhone 17 Pro',
     slug: 'iphone-17-pro',
+    images: {
+      hero: 'https://placehold.co/800x800/1c2b3a/ffffff/png?text=iPhone+17+Pro',
+      gallery: [
+        'https://placehold.co/800x800/1c2b3a/ffffff/png?text=Front',
+        'https://placehold.co/800x800/1c2b3a/ffffff/png?text=Back',
+        'https://placehold.co/800x800/1c2b3a/ffffff/png?text=Angle',
+        'https://placehold.co/800x800/1c2b3a/ffffff/png?text=In-Hand',
+      ],
+    },
     description:
       'Demo product for the 1Fi Marketplace assignment. Flagship Apple phone with Pro camera system and multiple EMI plans backed by mutual funds.',
     mrp: 149900,
@@ -14,20 +23,23 @@ const products = [
       {
         color: 'Silver',
         storage: '256 GB',
-        imageUrl:
-          'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=800&q=80',
+        imageUrl: 'https://placehold.co/800x800/1c2b3a/ffffff/png?text=Front',
+        mrp: 139900,
+        price: 124900,
       },
       {
         color: 'Cosmic Orange',
         storage: '512 GB',
-        imageUrl:
-          'https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?w=800&q=80',
+        imageUrl: 'https://placehold.co/800x800/1c2b3a/ffffff/png?text=Back',
+        mrp: 144900,
+        price: 129900,
       },
       {
         color: 'Deep Blue',
         storage: '1 TB',
-        imageUrl:
-          'https://images.unsplash.com/photo-1591337676887-a217a6970a8a?w=800&q=80',
+        imageUrl: 'https://placehold.co/800x800/1c2b3a/ffffff/png?text=Angle',
+        mrp: 149900,
+        price: 134900,
       },
     ],
     emiPlans: [
@@ -52,8 +64,16 @@ const products = [
     ],
   },
   {
-    name: 'Samsung S24 Ultra',
+    name: 'Galaxy S24 Ultra',
     slug: 'samsung-s24-ultra',
+    images: {
+      hero: 'https://placehold.co/800x800/6f6f6f/ffffff/png?text=Galaxy+S24+Ultra',
+      gallery: [
+        'https://placehold.co/800x800/6f6f6f/ffffff/png?text=Front',
+        'https://placehold.co/800x800/6f6f6f/ffffff/png?text=Back',
+        'https://placehold.co/800x800/6f6f6f/ffffff/png?text=S-Pen',
+      ],
+    },
     description:
       'Demo product for the 1Fi Marketplace assignment. Samsung Galaxy S24 Ultra with S Pen support and flexible EMI options.',
     mrp: 129999,
@@ -62,14 +82,16 @@ const products = [
       {
         color: 'Titanium Black',
         storage: '256 GB',
-        imageUrl:
-          'https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=800&q=80',
+        imageUrl: 'https://placehold.co/800x800/6f6f6f/ffffff/png?text=Front',
+        mrp: 119999,
+        price: 99999,
       },
       {
         color: 'Titanium Gray',
         storage: '512 GB',
-        imageUrl:
-          'https://images.unsplash.com/photo-1706372124814-ddd9aef0411f?w=800&q=80',
+        imageUrl: 'https://placehold.co/800x800/6f6f6f/ffffff/png?text=Back',
+        mrp: 129999,
+        price: 109999,
       },
     ],
     emiPlans: [
@@ -96,6 +118,14 @@ const products = [
   {
     name: 'Google Pixel 10',
     slug: 'google-pixel-10',
+    images: {
+      hero: 'https://placehold.co/800x800/0e0e10/ffffff/png?text=Pixel+10',
+      gallery: [
+        'https://placehold.co/800x800/0e0e10/ffffff/png?text=Front',
+        'https://placehold.co/800x800/0e0e10/ffffff/png?text=Back',
+        'https://placehold.co/800x800/0e0e10/ffffff/png?text=Angle',
+      ],
+    },
     description:
       'Demo product for the 1Fi Marketplace assignment. Google Pixel 10 with AI photography features and mutual-fund-backed EMI plans.',
     mrp: 89999,
@@ -104,14 +134,16 @@ const products = [
       {
         color: 'Obsidian',
         storage: '128 GB',
-        imageUrl:
-          'https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=800&q=80',
+        imageUrl: 'https://placehold.co/800x800/0e0e10/ffffff/png?text=Front',
+        mrp: 79999,
+        price: 69999,
       },
       {
         color: 'Porcelain',
         storage: '256 GB',
-        imageUrl:
-          'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80',
+        imageUrl: 'https://placehold.co/800x800/0e0e10/ffffff/png?text=Back',
+        mrp: 89999,
+        price: 79999,
       },
     ],
     emiPlans: [
