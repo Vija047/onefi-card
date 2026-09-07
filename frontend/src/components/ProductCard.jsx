@@ -13,9 +13,9 @@ export default function ProductCard({ product }) {
       className="group flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:border-teal-300 hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-600"
     >
       <div className="aspect-[4/3] overflow-hidden bg-slate-100">
-        {product.imageUrl ? (
+        {product.imageUrl || product.images?.hero ? (
           <img
-            src={product.imageUrl}
+            src={product.imageUrl || product.images.hero}
             alt={product.name}
             className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
             loading="lazy"

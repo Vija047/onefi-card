@@ -7,12 +7,11 @@ const products = [
     name: 'iPhone 17 Pro',
     slug: 'iphone-17-pro',
     images: {
-      hero: 'https://placehold.co/800x800/1c2b3a/ffffff/png?text=iPhone+17+Pro',
+      hero: 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=800&q=80',
       gallery: [
-        'https://placehold.co/800x800/1c2b3a/ffffff/png?text=Front',
-        'https://placehold.co/800x800/1c2b3a/ffffff/png?text=Back',
-        'https://placehold.co/800x800/1c2b3a/ffffff/png?text=Angle',
-        'https://placehold.co/800x800/1c2b3a/ffffff/png?text=In-Hand',
+        'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=800&q=80',
+        'https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?w=800&q=80',
+        'https://images.unsplash.com/photo-1591337676887-a217a6970a8a?w=800&q=80',
       ],
     },
     description:
@@ -23,21 +22,24 @@ const products = [
       {
         color: 'Silver',
         storage: '256 GB',
-        imageUrl: 'https://placehold.co/800x800/1c2b3a/ffffff/png?text=Front',
+        imageUrl:
+          'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=800&q=80',
         mrp: 139900,
         price: 124900,
       },
       {
         color: 'Cosmic Orange',
         storage: '512 GB',
-        imageUrl: 'https://placehold.co/800x800/1c2b3a/ffffff/png?text=Back',
+        imageUrl:
+          'https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?w=800&q=80',
         mrp: 144900,
         price: 129900,
       },
       {
         color: 'Deep Blue',
         storage: '1 TB',
-        imageUrl: 'https://placehold.co/800x800/1c2b3a/ffffff/png?text=Angle',
+        imageUrl:
+          'https://images.unsplash.com/photo-1591337676887-a217a6970a8a?w=800&q=80',
         mrp: 149900,
         price: 134900,
       },
@@ -64,14 +66,13 @@ const products = [
     ],
   },
   {
-    name: 'Galaxy S24 Ultra',
+    name: 'Samsung S24 Ultra',
     slug: 'samsung-s24-ultra',
     images: {
-      hero: 'https://placehold.co/800x800/6f6f6f/ffffff/png?text=Galaxy+S24+Ultra',
+      hero: 'https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=800&q=80',
       gallery: [
-        'https://placehold.co/800x800/6f6f6f/ffffff/png?text=Front',
-        'https://placehold.co/800x800/6f6f6f/ffffff/png?text=Back',
-        'https://placehold.co/800x800/6f6f6f/ffffff/png?text=S-Pen',
+        'https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=800&q=80',
+        'https://images.unsplash.com/photo-1706372124814-ddd9aef0411f?w=800&q=80',
       ],
     },
     description:
@@ -82,14 +83,16 @@ const products = [
       {
         color: 'Titanium Black',
         storage: '256 GB',
-        imageUrl: 'https://placehold.co/800x800/6f6f6f/ffffff/png?text=Front',
+        imageUrl:
+          'https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=800&q=80',
         mrp: 119999,
         price: 99999,
       },
       {
         color: 'Titanium Gray',
         storage: '512 GB',
-        imageUrl: 'https://placehold.co/800x800/6f6f6f/ffffff/png?text=Back',
+        imageUrl:
+          'https://images.unsplash.com/photo-1706372124814-ddd9aef0411f?w=800&q=80',
         mrp: 129999,
         price: 109999,
       },
@@ -119,11 +122,10 @@ const products = [
     name: 'Google Pixel 10',
     slug: 'google-pixel-10',
     images: {
-      hero: 'https://placehold.co/800x800/0e0e10/ffffff/png?text=Pixel+10',
+      hero: 'https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=800&q=80',
       gallery: [
-        'https://placehold.co/800x800/0e0e10/ffffff/png?text=Front',
-        'https://placehold.co/800x800/0e0e10/ffffff/png?text=Back',
-        'https://placehold.co/800x800/0e0e10/ffffff/png?text=Angle',
+        'https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=800&q=80',
+        'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80',
       ],
     },
     description:
@@ -134,14 +136,16 @@ const products = [
       {
         color: 'Obsidian',
         storage: '128 GB',
-        imageUrl: 'https://placehold.co/800x800/0e0e10/ffffff/png?text=Front',
+        imageUrl:
+          'https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=800&q=80',
         mrp: 79999,
         price: 69999,
       },
       {
         color: 'Porcelain',
         storage: '256 GB',
-        imageUrl: 'https://placehold.co/800x800/0e0e10/ffffff/png?text=Back',
+        imageUrl:
+          'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80',
         mrp: 89999,
         price: 79999,
       },

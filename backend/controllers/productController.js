@@ -7,59 +7,116 @@ function toNumber(value) {
   return Number(value);
 }
 
+function uniqueUrls(urls) {
+  return [...new Set((urls || []).filter(Boolean))];
+}
+
+/**
+ * Build a detailed images payload from DB fields.
+ * If Product.images is empty, fall back to variant imageUrls already stored in the database.
+ * Never invents placeholder/mock URLs.
+ */
+function normalizeImages(product) {
+  const raw =
+    product.images && typeof product.images === 'object' && !Array.isArray(product.images)
+      ? product.images
+      : {};
+
+  const storedGallery = Array.isArray(raw.gallery) ? uniqueUrls(raw.gallery) : [];
+  const variantGallery = uniqueUrls(
+    (product.variants || []).map((variant) => variant.imageUrl),
+  );
+
+  const gallery = storedGallery.length ? storedGallery : variantGallery;
+  const hero = raw.hero || gallery[0] || null;
+
+  return {
+    hero,
+    gallery,
+  };
+}
+
+function serializeVariant(variant) {
+  return {
+    id: variant.id,
+    productId: variant.productId,
+    color: variant.color,
+    storage: variant.storage,
+    imageUrl: variant.imageUrl,
+    mrp: toNumber(variant.mrp),
+    price: toNumber(variant.price),
+  };
+}
+
+function serializeEmiPlan(plan) {
+  return {
+    id: plan.id,
+    productId: plan.productId,
+    monthlyPayment: toNumber(plan.monthlyPayment),
+    tenureMonths: plan.tenureMonths,
+    interestRate: toNumber(plan.interestRate),
+    cashback: toNumber(plan.cashback),
+  };
+}
+
 function serializeProduct(product) {
   if (!product) return null;
+
+  const images = normalizeImages(product);
+  const variants = product.variants ? product.variants.map(serializeVariant) : [];
+  const emiPlans = product.emiPlans ? product.emiPlans.map(serializeEmiPlan) : [];
 
   return {
     id: product.id,
     name: product.name,
     slug: product.slug,
     description: product.description,
-    images: product.images,
+    images,
     mrp: toNumber(product.mrp),
     price: toNumber(product.price),
     createdAt: product.createdAt,
     updatedAt: product.updatedAt,
-    variants: product.variants
-      ? product.variants.map((variant) => ({
-          id: variant.id,
-          productId: variant.productId,
-          color: variant.color,
-          storage: variant.storage,
-          imageUrl: variant.imageUrl,
-          mrp: toNumber(variant.mrp),
-          price: toNumber(variant.price),
-        }))
-      : undefined,
-    emiPlans: product.emiPlans
-      ? product.emiPlans.map((plan) => ({
-          id: plan.id,
-          productId: plan.productId,
-          monthlyPayment: toNumber(plan.monthlyPayment),
-          tenureMonths: plan.tenureMonths,
-          interestRate: toNumber(plan.interestRate),
-          cashback: toNumber(plan.cashback),
-        }))
-      : undefined,
+    variants,
+    emiPlans,
+    details: {
+      variantCount: variants.length,
+      emiPlanCount: emiPlans.length,
+      colors: [...new Set(variants.map((variant) => variant.color))],
+      storages: [...new Set(variants.map((variant) => variant.storage))],
+      startingEmi: emiPlans.length
+        ? Math.min(...emiPlans.map((plan) => plan.monthlyPayment))
+        : null,
+      priceRange: variants.length
+        ? {
+            min: Math.min(...variants.map((variant) => variant.price)),
+            max: Math.max(...variants.map((variant) => variant.price)),
+          }
+        : {
+            min: toNumber(product.price),
+            max: toNumber(product.price),
+          },
+    },
   };
 }
 
 function serializeListingProduct(product) {
+  const images = normalizeImages(product);
   const firstVariant = product.variants?.[0];
+  const emiPlans = product.emiPlans || [];
 
   return {
     id: product.id,
     name: product.name,
     slug: product.slug,
     description: product.description,
-    images: product.images,
+    images,
     mrp: toNumber(product.mrp),
     price: toNumber(product.price),
-    imageUrl: firstVariant?.imageUrl || null,
+    imageUrl: firstVariant?.imageUrl || images.hero || null,
     variantCount: product.variants?.length || 0,
-    emiPlanCount: product.emiPlans?.length || 0,
-    startingEmi: product.emiPlans?.length
-      ? Math.min(...product.emiPlans.map((plan) => toNumber(plan.monthlyPayment)))
+    emiPlanCount: emiPlans.length,
+    startingEmi: emiPlans.length
+      ? Math.min(...emiPlans.map((plan) => toNumber(plan.monthlyPayment)))
       : null,
   };
 }
@@ -119,4 +176,5 @@ async function getProductBySlug(req, res, next) {
 module.exports = {
   getProducts,
   getProductBySlug,
+  normalizeImages,
 };

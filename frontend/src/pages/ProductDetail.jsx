@@ -50,11 +50,13 @@ export default function ProductDetail() {
   }, [loadProduct])
 
   const colors = useMemo(() => {
+    if (product?.details?.colors?.length) return product.details.colors
     if (!product?.variants) return []
     return [...new Set(product.variants.map((variant) => variant.color))]
   }, [product])
 
   const storages = useMemo(() => {
+    if (product?.details?.storages?.length) return product.details.storages
     if (!product?.variants) return []
     return [...new Set(product.variants.map((variant) => variant.storage))]
   }, [product])
@@ -62,38 +64,63 @@ export default function ProductDetail() {
   const selectedVariant = useMemo(() => {
     if (!product?.variants?.length) return null
 
-    const colorVariant = product.variants.find(
+    const exactMatch = product.variants.find(
+      (variant) =>
+        variant.color === selectedColor && variant.storage === selectedStorage,
+    )
+    if (exactMatch) return exactMatch
+
+    const colorMatch = product.variants.find(
       (variant) => variant.color === selectedColor,
     )
-    const storageVariant = product.variants.find(
+    if (colorMatch) return colorMatch
+
+    const storageMatch = product.variants.find(
       (variant) => variant.storage === selectedStorage,
     )
-    const fallback = product.variants[0]
+    if (storageMatch) return storageMatch
 
-    return {
-      ...(storageVariant || fallback),
-      color: selectedColor || colorVariant?.color || fallback.color,
-      storage: selectedStorage || storageVariant?.storage || fallback.storage,
-      imageUrl: colorVariant?.imageUrl || storageVariant?.imageUrl || fallback.imageUrl,
-    }
+    return product.variants[0]
   }, [product, selectedColor, selectedStorage])
 
   const handleColorChange = (color) => {
     setSelectedColor(color)
+
+    const matching = product?.variants?.find(
+      (variant) =>
+        variant.color === color && variant.storage === selectedStorage,
+    )
+    if (matching) return
+
+    const firstForColor = product?.variants?.find(
+      (variant) => variant.color === color,
+    )
+    if (firstForColor) {
+      setSelectedStorage(firstForColor.storage)
+    }
   }
 
   const handleStorageChange = (storage) => {
     setSelectedStorage(storage)
+
+    const matching = product?.variants?.find(
+      (variant) =>
+        variant.storage === storage && variant.color === selectedColor,
+    )
+    if (matching) return
+
+    const firstForStorage = product?.variants?.find(
+      (variant) => variant.storage === storage,
+    )
+    if (firstForStorage) {
+      setSelectedColor(firstForStorage.color)
+    }
   }
 
   const selectedPrice = selectedVariant?.price ?? product?.price ?? 0
   const selectedMrp = selectedVariant?.mrp ?? product?.mrp ?? 0
-  const selectedEmiPlans = (product?.emiPlans || []).map((plan) => ({
-    ...plan,
-    monthlyPayment: Math.round(
-      plan.monthlyPayment * (selectedPrice / (product?.price || 1)),
-    ),
-  }))
+  // EMI plans come from the database as-is — no client-side mock recalculation.
+  const selectedEmiPlans = product?.emiPlans || []
 
   const variantLabel = selectedVariant
     ? `${selectedVariant.color} · ${selectedVariant.storage}`
@@ -150,7 +177,8 @@ export default function ProductDetail() {
 
       <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
         <ProductGallery
-          imageUrl={selectedVariant?.imageUrl}
+          images={product.images}
+          selectedImageUrl={selectedVariant?.imageUrl}
           name={product.name}
           variantLabel={variantLabel}
         />
@@ -166,6 +194,15 @@ export default function ProductDetail() {
             {product.description ? (
               <p className="mt-3 text-sm leading-relaxed text-slate-500">
                 {product.description}
+              </p>
+            ) : null}
+            {product.details ? (
+              <p className="mt-2 text-sm text-slate-500">
+                {product.details.variantCount} variants ·{' '}
+                {product.details.emiPlanCount} EMI plans
+                {product.details.startingEmi != null
+                  ? ` · EMI from ${formatCurrency(product.details.startingEmi)}/mo`
+                  : ''}
               </p>
             ) : null}
           </div>

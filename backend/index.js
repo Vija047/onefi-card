@@ -1,8 +1,10 @@
 const express = require('express');
-require('./config/db.js');
 require('dotenv').config();
+require('./config/db.js');
 const cors = require('cors');
 
+const prisma = require('./config/prisma');
+const { backfillProductImages } = require('./config/backfillImages');
 const productRoutes = require('./routes/productRoutes');
 const { notFoundHandler, errorHandler } = require('./middleware/errorHandler');
 
@@ -23,4 +25,8 @@ app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`backend running port http://localhost:${PORT}`);
+
+  backfillProductImages(prisma).catch((err) => {
+    console.error('Image backfill skipped:', err.message);
+  });
 });
