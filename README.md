@@ -252,7 +252,19 @@
  3. Run committed migrations with `prisma migrate deploy`.
  4. Start the API with `npm start`.
 
- Configure `DATABASE_URL` as a secret environment variable containing the production PostgreSQL connection string. The service uses Render's `PORT` when supplied by the platform.
+ Configure `DATABASE_URL` as a secret environment variable in Render. Use the
+ Supabase **Session Pooler** connection string from the Supabase dashboard's
+ Connect dialog, with port `5432` and `sslmode=require`:
+
+ ```env
+ DATABASE_URL=postgresql://postgres.<project-ref>:<password>@<region>.pooler.supabase.com:5432/postgres?sslmode=require
+ ```
+
+ Do not use the direct `db.<project-ref>.supabase.co:5432` URL: it resolves to
+ IPv6 only and cannot be reached by Render's build environment. Do not use the
+ transaction pooler on port `6543` for `prisma migrate deploy`; migrations need
+ the Session Pooler connection. The service uses Render's `PORT` when supplied
+ by the platform.
 
  ### Frontend on Vercel
 
