@@ -17,13 +17,13 @@ export default function ProductDetail() {
   const [error, setError] = useState(null)
   const [selectedColor, setSelectedColor] = useState('')
   const [selectedStorage, setSelectedStorage] = useState('')
-  const [selectedEmiPlan, setSelectedEmiPlan] = useState(null)
+  const [selectedEmiPlanId, setSelectedEmiPlanId] = useState(null)
   const [showConfirmation, setShowConfirmation] = useState(false)
 
   const loadProduct = useCallback(async () => {
     setLoading(true)
     setError(null)
-    setSelectedEmiPlan(null)
+    setSelectedEmiPlanId(null)
     setShowConfirmation(false)
 
     try {
@@ -61,70 +61,50 @@ export default function ProductDetail() {
     return [...new Set(product.variants.map((variant) => variant.storage))]
   }, [product])
 
-  const selectedVariant = useMemo(() => {
+  const colorVariant = useMemo(() => {
     if (!product?.variants?.length) return null
-
-    const exactMatch = product.variants.find(
-      (variant) =>
-        variant.color === selectedColor && variant.storage === selectedStorage,
+    return (
+      product.variants.find((variant) => variant.color === selectedColor) ||
+      product.variants[0]
     )
-    if (exactMatch) return exactMatch
+  }, [product, selectedColor])
 
-    const colorMatch = product.variants.find(
-      (variant) => variant.color === selectedColor,
+  const storageVariant = useMemo(() => {
+    if (!product?.variants?.length) return null
+    return (
+      product.variants.find((variant) => variant.storage === selectedStorage) ||
+      product.variants[0]
     )
-    if (colorMatch) return colorMatch
+  }, [product, selectedStorage])
 
-    const storageMatch = product.variants.find(
-      (variant) => variant.storage === selectedStorage,
-    )
-    if (storageMatch) return storageMatch
+  // Color only changes the shown image. Storage only drives price/MRP.
+  const selectedPrice = storageVariant?.price ?? product?.price ?? 0
+  const selectedMrp = storageVariant?.mrp ?? product?.mrp ?? 0
+  const selectedImageUrl = colorVariant?.imageUrl || storageVariant?.imageUrl
 
-    return product.variants[0]
-  }, [product, selectedColor, selectedStorage])
+  const basePrice = product?.price || selectedPrice || 1
+  const priceRatio = selectedPrice / basePrice
 
-  const handleColorChange = (color) => {
-    setSelectedColor(color)
+  const selectedEmiPlans = useMemo(() => {
+    return (product?.emiPlans || []).map((plan) => ({
+      ...plan,
+      monthlyPayment: Math.round(plan.monthlyPayment * priceRatio),
+    }))
+  }, [product, priceRatio])
 
-    const matching = product?.variants?.find(
-      (variant) =>
-        variant.color === color && variant.storage === selectedStorage,
-    )
-    if (matching) return
+  const selectedEmiPlan = useMemo(
+    () => selectedEmiPlans.find((plan) => plan.id === selectedEmiPlanId) || null,
+    [selectedEmiPlans, selectedEmiPlanId],
+  )
 
-    const firstForColor = product?.variants?.find(
-      (variant) => variant.color === color,
-    )
-    if (firstForColor) {
-      setSelectedStorage(firstForColor.storage)
-    }
-  }
-
-  const handleStorageChange = (storage) => {
-    setSelectedStorage(storage)
-
-    const matching = product?.variants?.find(
-      (variant) =>
-        variant.storage === storage && variant.color === selectedColor,
-    )
-    if (matching) return
-
-    const firstForStorage = product?.variants?.find(
-      (variant) => variant.storage === storage,
-    )
-    if (firstForStorage) {
-      setSelectedColor(firstForStorage.color)
-    }
-  }
-
-  const selectedPrice = selectedVariant?.price ?? product?.price ?? 0
-  const selectedMrp = selectedVariant?.mrp ?? product?.mrp ?? 0
-  // EMI plans come from the database as-is — no client-side mock recalculation.
-  const selectedEmiPlans = product?.emiPlans || []
-
-  const variantLabel = selectedVariant
-    ? `${selectedVariant.color} · ${selectedVariant.storage}`
+  const startingEmi = selectedEmiPlans.length
+    ? Math.min(...selectedEmiPlans.map((plan) => plan.monthlyPayment))
     : null
+
+  const variantLabel =
+    selectedColor && selectedStorage
+      ? `${selectedColor} · ${selectedStorage}`
+      : selectedColor || selectedStorage || null
 
   if (loading) {
     return <Loading label="Loading product..." />
@@ -178,7 +158,7 @@ export default function ProductDetail() {
       <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
         <ProductGallery
           images={product.images}
-          selectedImageUrl={selectedVariant?.imageUrl}
+          selectedImageUrl={selectedImageUrl}
           name={product.name}
           variantLabel={variantLabel}
         />
@@ -196,15 +176,15 @@ export default function ProductDetail() {
                 {product.description}
               </p>
             ) : null}
-            {product.details ? (
-              <p className="mt-2 text-sm text-slate-500">
-                {product.details.variantCount} variants ·{' '}
-                {product.details.emiPlanCount} EMI plans
-                {product.details.startingEmi != null
-                  ? ` · EMI from ${formatCurrency(product.details.startingEmi)}/mo`
-                  : ''}
-              </p>
-            ) : null}
+            <p className="mt-2 text-sm text-slate-500">
+              {product.details?.variantCount ?? product.variants?.length ?? 0}{' '}
+              variants ·{' '}
+              {product.details?.emiPlanCount ?? product.emiPlans?.length ?? 0}{' '}
+              EMI plans
+              {startingEmi != null
+                ? ` · EMI from ${formatCurrency(startingEmi)}/mo`
+                : ''}
+            </p>
           </div>
 
           <div className="space-y-1 rounded-2xl border border-slate-200 bg-white p-5">
@@ -216,7 +196,10 @@ export default function ProductDetail() {
             <p className="text-3xl font-semibold text-slate-900">
               {formatCurrency(selectedPrice)}
             </p>
-            <p className="text-sm text-slate-500">Selling price</p>
+            <p className="text-sm text-slate-500">
+              Selling price
+              {selectedStorage ? ` for ${selectedStorage}` : ''}
+            </p>
           </div>
 
           <div>
@@ -229,8 +212,8 @@ export default function ProductDetail() {
                 storages={storages}
                 selectedColor={selectedColor}
                 selectedStorage={selectedStorage}
-                onColorChange={handleColorChange}
-                onStorageChange={handleStorageChange}
+                onColorChange={setSelectedColor}
+                onStorageChange={setSelectedStorage}
               />
             ) : (
               <p className="text-sm text-slate-500">No variants available.</p>
@@ -241,10 +224,13 @@ export default function ProductDetail() {
             <h2 className="mb-4 text-lg font-semibold text-slate-900">
               EMI plans
             </h2>
+            <p className="mb-3 text-sm text-slate-500">
+              Monthly amounts update with the selected storage price.
+            </p>
             <EmiPlanList
               plans={selectedEmiPlans}
-              selectedPlanId={selectedEmiPlan?.id}
-              onSelect={setSelectedEmiPlan}
+              selectedPlanId={selectedEmiPlanId}
+              onSelect={(plan) => setSelectedEmiPlanId(plan.id)}
             />
           </div>
 
