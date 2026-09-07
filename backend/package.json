@@ -16,7 +16,9 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon index.js",
-    "start": "node index.js",
+    "start": "node scripts/start.js",
+    "postinstall": "node scripts/patch-prisma-bin.js",
+    "build:ci": "node scripts/ci-build.js",
     "db:migrate": "prisma migrate dev",
     "db:seed": "prisma db seed",
     "db:generate": "prisma generate",
