@@ -9,20 +9,6 @@ import ProductGallery from '../components/ProductGallery'
 import VariantSelector from '../components/VariantSelector'
 import { formatCurrency } from '../utils/format'
 
-function findVariant(variants, color, storage) {
-  if (!variants?.length) return null
-
-  const exact = variants.find(
-    (variant) => variant.color === color && variant.storage === storage,
-  )
-  if (exact) return exact
-
-  const byColor = variants.find((variant) => variant.color === color)
-  if (byColor) return byColor
-
-  return variants[0]
-}
-
 export default function ProductDetail() {
   const { slug } = useParams()
 
@@ -73,38 +59,41 @@ export default function ProductDetail() {
     return [...new Set(product.variants.map((variant) => variant.storage))]
   }, [product])
 
-  const selectedVariant = useMemo(
-    () => findVariant(product?.variants, selectedColor, selectedStorage),
-    [product, selectedColor, selectedStorage],
-  )
+  const selectedVariant = useMemo(() => {
+    if (!product?.variants?.length) return null
+
+    const colorVariant = product.variants.find(
+      (variant) => variant.color === selectedColor,
+    )
+    const storageVariant = product.variants.find(
+      (variant) => variant.storage === selectedStorage,
+    )
+    const fallback = product.variants[0]
+
+    return {
+      ...(storageVariant || fallback),
+      color: selectedColor || colorVariant?.color || fallback.color,
+      storage: selectedStorage || storageVariant?.storage || fallback.storage,
+      imageUrl: colorVariant?.imageUrl || storageVariant?.imageUrl || fallback.imageUrl,
+    }
+  }, [product, selectedColor, selectedStorage])
 
   const handleColorChange = (color) => {
     setSelectedColor(color)
-    const matching = product?.variants?.find(
-      (variant) =>
-        variant.color === color && variant.storage === selectedStorage,
-    )
-    if (!matching) {
-      const fallback = product?.variants?.find(
-        (variant) => variant.color === color,
-      )
-      if (fallback) setSelectedStorage(fallback.storage)
-    }
   }
 
   const handleStorageChange = (storage) => {
     setSelectedStorage(storage)
-    const matching = product?.variants?.find(
-      (variant) =>
-        variant.storage === storage && variant.color === selectedColor,
-    )
-    if (!matching) {
-      const fallback = product?.variants?.find(
-        (variant) => variant.storage === storage,
-      )
-      if (fallback) setSelectedColor(fallback.color)
-    }
   }
+
+  const selectedPrice = selectedVariant?.price ?? product.price
+  const selectedMrp = selectedVariant?.mrp ?? product.mrp
+  const selectedEmiPlans = (product.emiPlans || []).map((plan) => ({
+    ...plan,
+    monthlyPayment: Math.round(
+      plan.monthlyPayment * (selectedPrice / product.price),
+    ),
+  }))
 
   const variantLabel = selectedVariant
     ? `${selectedVariant.color} · ${selectedVariant.storage}`
@@ -182,13 +171,13 @@ export default function ProductDetail() {
           </div>
 
           <div className="space-y-1 rounded-2xl border border-slate-200 bg-white p-5">
-            {product.mrp && product.mrp > product.price ? (
+            {selectedMrp && selectedMrp > selectedPrice ? (
               <p className="text-sm text-slate-400 line-through">
-                MRP {formatCurrency(product.mrp)}
+                MRP {formatCurrency(selectedMrp)}
               </p>
             ) : null}
             <p className="text-3xl font-semibold text-slate-900">
-              {formatCurrency(product.price)}
+              {formatCurrency(selectedPrice)}
             </p>
             <p className="text-sm text-slate-500">Selling price</p>
           </div>
@@ -216,7 +205,7 @@ export default function ProductDetail() {
               EMI plans
             </h2>
             <EmiPlanList
-              plans={product.emiPlans || []}
+              plans={selectedEmiPlans}
               selectedPlanId={selectedEmiPlan?.id}
               onSelect={setSelectedEmiPlan}
             />

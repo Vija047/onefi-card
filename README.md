@@ -109,6 +109,8 @@
 			 string color
 			 string storage
 			 string imageUrl
+				 decimal mrp
+				 decimal price
 		 }
 		 EmiPlan {
 			 int id PK
@@ -125,6 +127,7 @@
  - Deleting a product cascades to its variants and EMI plans.
  - Monetary values use Prisma `Decimal` and are converted to numbers in API responses.
  - `ProductVariant.imageUrl` stores the image displayed for a selected variant.
+- `ProductVariant.mrp` and `ProductVariant.price` store storage-specific pricing.
  - `EmiPlan.cashback` and `Product.description` are optional.
 
  ## API Reference
